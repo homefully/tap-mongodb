@@ -199,45 +199,47 @@ class MongoDBOplog(unittest.TestCase):
 
         changed_ids = set()
         with get_test_connection() as client:
-            # Delete two documents for each collection
+            with client.start_session() as session:
+                with session.start_transaction():
+                    # Delete two documents for each collection
 
-            changed_ids.add(client['simple_db']['simple_coll_1'].find({'int_field': 0})[0]['_id'])
-            client["simple_db"]["simple_coll_1"].delete_one({'int_field': 0})
+                    changed_ids.add(client['simple_db']['simple_coll_1'].find({'int_field': 0})[0]['_id'])
+                    client["simple_db"]["simple_coll_1"].delete_one({'int_field': 0})
 
-            changed_ids.add(client['simple_db']['simple_coll_1'].find({'int_field': 1})[0]['_id'])
-            client["simple_db"]["simple_coll_1"].delete_one({'int_field': 1})
+                    changed_ids.add(client['simple_db']['simple_coll_1'].find({'int_field': 1})[0]['_id'])
+                    client["simple_db"]["simple_coll_1"].delete_one({'int_field': 1})
 
-            changed_ids.add(client['simple_db']['simple_coll_2'].find({'int_field': 0})[0]['_id'])
-            client["simple_db"]["simple_coll_2"].delete_one({'int_field': 0})
+                    changed_ids.add(client['simple_db']['simple_coll_2'].find({'int_field': 0})[0]['_id'])
+                    client["simple_db"]["simple_coll_2"].delete_one({'int_field': 0})
 
-            changed_ids.add(client['simple_db']['simple_coll_2'].find({'int_field': 1})[0]['_id'])
-            client["simple_db"]["simple_coll_2"].delete_one({'int_field': 1})
+                    changed_ids.add(client['simple_db']['simple_coll_2'].find({'int_field': 1})[0]['_id'])
+                    client["simple_db"]["simple_coll_2"].delete_one({'int_field': 1})
 
-            # Update two documents for each collection
-            changed_ids.add(client['simple_db']['simple_coll_1'].find({'int_field': 48})[0]['_id'])
-            client["simple_db"]["simple_coll_1"].update_one({'int_field': 48},{'$set': {'int_field': -1}})
+                    # Update two documents for each collection
+                    changed_ids.add(client['simple_db']['simple_coll_1'].find({'int_field': 48})[0]['_id'])
+                    client["simple_db"]["simple_coll_1"].update_one({'int_field': 48},{'$set': {'int_field': -1}})
 
-            changed_ids.add(client['simple_db']['simple_coll_1'].find({'int_field': 49})[0]['_id'])
-            client["simple_db"]["simple_coll_1"].update_one({'int_field': 49},{'$set': {'int_field': -1}})
+                    changed_ids.add(client['simple_db']['simple_coll_1'].find({'int_field': 49})[0]['_id'])
+                    client["simple_db"]["simple_coll_1"].update_one({'int_field': 49},{'$set': {'int_field': -1}})
 
-            changed_ids.add(client['simple_db']['simple_coll_2'].find({'int_field': 98})[0]['_id'])
-            client["simple_db"]["simple_coll_2"].update_one({'int_field': 98},{'$set': {'int_field': -1}})
+                    changed_ids.add(client['simple_db']['simple_coll_2'].find({'int_field': 98})[0]['_id'])
+                    client["simple_db"]["simple_coll_2"].update_one({'int_field': 98},{'$set': {'int_field': -1}})
 
-            changed_ids.add(client['simple_db']['simple_coll_2'].find({'int_field': 99})[0]['_id'])
-            client["simple_db"]["simple_coll_2"].update_one({'int_field': 99},{'$set': {'int_field': -1}})
+                    changed_ids.add(client['simple_db']['simple_coll_2'].find({'int_field': 99})[0]['_id'])
+                    client["simple_db"]["simple_coll_2"].update_one({'int_field': 99},{'$set': {'int_field': -1}})
 
-            # Insert two documents for each collection
-            client["simple_db"]["simple_coll_1"].insert_one({"int_field": 50, "string_field": random_string_generator()})
-            changed_ids.add(client['simple_db']['simple_coll_1'].find({'int_field': 50})[0]['_id'])
+                    # Insert two documents for each collection
+                    client["simple_db"]["simple_coll_1"].insert_one({"int_field": 50, "string_field": random_string_generator()})
+                    changed_ids.add(client['simple_db']['simple_coll_1'].find({'int_field': 50})[0]['_id'])
 
-            client["simple_db"]["simple_coll_1"].insert_one({"int_field": 51, "string_field": random_string_generator()})
-            changed_ids.add(client['simple_db']['simple_coll_1'].find({'int_field': 51})[0]['_id'])
+                    client["simple_db"]["simple_coll_1"].insert_one({"int_field": 51, "string_field": random_string_generator()})
+                    changed_ids.add(client['simple_db']['simple_coll_1'].find({'int_field': 51})[0]['_id'])
 
-            client["simple_db"]["simple_coll_2"].insert_one({"int_field": 100, "string_field": random_string_generator()})
-            changed_ids.add(client['simple_db']['simple_coll_2'].find({'int_field': 100})[0]['_id'])
+                    client["simple_db"]["simple_coll_2"].insert_one({"int_field": 100, "string_field": random_string_generator()})
+                    changed_ids.add(client['simple_db']['simple_coll_2'].find({'int_field': 100})[0]['_id'])
 
-            client["simple_db"]["simple_coll_2"].insert_one({"int_field": 101, "string_field": random_string_generator()})
-            changed_ids.add(client['simple_db']['simple_coll_2'].find({'int_field': 101})[0]['_id'])
+                    client["simple_db"]["simple_coll_2"].insert_one({"int_field": 101, "string_field": random_string_generator()})
+                    changed_ids.add(client['simple_db']['simple_coll_2'].find({'int_field': 101})[0]['_id'])
 
         #  -----------------------------------
         # ----------- Subsequent Oplog Sync ---------
